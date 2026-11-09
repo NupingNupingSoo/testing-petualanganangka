@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Angka</title>
+    <!-- Menggunakan font interaktif anak-anak dari Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .game-container {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            border: 5px solid #ffeaa7;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #d63031;
+            font-size: 30px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0px #ffeaa7;
+        }
+        .subtitle {
+            color: #636e72;
+            font-size: 15px;
+            margin-bottom: 22px;
+            font-weight: 600;
+        }
+        .stats-box {
+            display: flex;
+            justify-content: space-around;
+            background: #f1f2f6;
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #2d3436;
+            font-size: 16px;
+        }
+        .question-box {
+            font-size: 24px;
+            color: #2d3436;
+            margin: 25px 0;
+            background: #dfe6e9;
+            padding: 22px;
+            border-radius: 18px;
+            border: 2px dashed #b2bec3;
+        }
+        input[type="text"], input[type="number"] {
+            width: 85%;
+            padding: 14px;
+            font-size: 19px;
+            border: 3px solid #74b9ff;
+            border-radius: 14px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 18px;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #00b894;
+            box-shadow: 0 0 8px rgba(0, 184, 148, 0.4);
+        }
+        button {
+            background-color: #00b894;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 19px;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 5px 0px #00a884;
+            transition: 0.1s;
+        }
+        button:hover {
+            background-color: #55efc4;
+        }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0px #00a884;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .btn-secondary {
+            background-color: #d63031;
+            box-shadow: 0 5px 0px #b71540;
+        }
+        .btn-secondary:hover {
+            background-color: #ff7675;
+        }
+        .btn-secondary:active {
+            box-shadow: 0 1px 0px #b71540;
+        }
+        .message {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            min-height: 28px;
+        }
+        .correct { color: #00b894; animation: bounce 0.3s; }
+        .wrong { color: #d63031; animation: shake 0.3s; }
+        .hidden { display: none !important; }
+
+        /* Styling untuk Modal Pop-up Kustom */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 4px solid #d63031;
+        }
+        .modal-box h3 {
+            color: #d63031;
+            margin-top: 0;
+            font-size: 22px;
+        }
+        .modal-box p {
+            color: #2d3436;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>PETUALANGAN ANGKA</h1>
+        <div class="subtitle">Belajar Matematika Seru dan Menyenangkan</div>
+
+        <!-- TAHAP 1: INPUT NAMA -->
+        <div id="step-nama">
+            <p>Masukkan nama pemain cilik:</p>
+            <input type="text" id="input-nama" placeholder="Ketik nama kamu...">
+            <br>
+            <button onclick="mulaiPemain()">Lanjut</button>
+        </div>
+
+        <!-- TAHAP 2: MENUNGGU KETIK "mulai" -->
+        <div id="step-mulai" class="hidden">
+            <p id="salam-user" style="font-size: 18px; color: #2d3436; font-weight: 600;"></p>
+            <p>Kamu memiliki <strong>3 nyawa</strong>. Jawab 5 soal dengan benar!</p>
+            <p style="font-size: 14px; color: #e17055;">Ketik <b>'mulai'</b> di bawah untuk masuk ke arena:</p>
+            <input type="text" id="input-mulai-teks" placeholder="Ketik 'mulai'...">
+            <br>
+            <button onclick="konfirmasiMulai()">Mulai Main</button>
+        </div>
+
+        <!-- TAHAP 3: PERMAINAN UTAMA -->
+        <div id="step-game" class="hidden">
+            <div class="stats-box">
+                <span id="label-soal">Soal ke-1</span>
+                <span id="label-nyawa">Nyawa: 3</span>
+            </div>
+            <div class="question-box" id="teks-soal">
+                Berapa hasil dari ... ?
+            </div>
+            <input type="number" id="input-jawaban" placeholder="Jawaban kamu...">
+            <br>
+            <button onclick="cekJawaban()">Jawab</button>
+            <div class="message" id="pesan-feedback"></div>
+        </div>
+
+        <!-- TAHAP 4: SELESAI / TOMBOL PILIHAN (IYA / TIDAK) -->
+        <div id="step-selesai" class="hidden">
+            <h2 id="judul-selesai" style="color: #d63031;">Permainan Selesai</h2>
+            <p id="skor-akhir" style="font-size: 22px; font-weight: bold; color: #2d3436;"></p>
+            <p id="pesan-penutup" style="font-weight: 600; color: #636e72; margin-bottom: 20px;"></p>
+            
+            <p style="font-weight: 600; color: #2d3436; margin-bottom: 15px;">Apakah kamu ingin bermain lagi?</p>
+            
+            <div class="btn-group">
+                <button onclick="prosesMainLagi('iya')">Iya</button>
+                <button class="btn-secondary" onclick="prosesMainLagi('tidak')">Tidak</button>
+            </div>
+        </div>
+
+        <!-- TAHAP 5: KELUAR / EXIT SCREEN -->
+        <div id="step-keluar" class="hidden">
+            <h2 style="color: #636e72; margin-top: 30px;">TERIMA KASIH TELAH BERMAIN</h2>
+            <p id="pesan-keluar-nama" style="font-size: 18px; font-weight: 600; color: #2d3436; margin-bottom: 25px;"></p>
+            <p style="color: #b2bec3; font-size: 14px;">Aplikasi telah ditutup. Silakan tutup tab atau refresh halaman untuk bermain kembali.</p>
+        </div>
+    </div>
+
+    <!-- KOTAK MODAL POP-UP KUSTOM (DITAMBAHKAN KELAS 'hidden' DI SINI) -->
+    <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Perhatian</h3>
+            <p id="modal-text">Pesan peringatan di sini...</p>
+            <button onclick="tutupModal()">Mengerti</button>
+        </div>
+    </div>
+
+    <script>
+        let nama = "";
+        let ulang = 1;
+        let skor = 0;
+        let nyawa = 3;
+        let soalKe = 1;
+        let jawabanBenar = 0;
+
+        // FUNGSI MENAMPILKAN POP-UP MODAL KUSTOM
+        function tampilkanModal(pesan) {
+            document.getElementById("modal-text").innerText = pesan;
+            document.getElementById("custom-modal").classList.remove("hidden");
+        }
+
+        function tutupModal() {
+            document.getElementById("custom-modal").classList.add("hidden");
+        }
+
+        // FUNGSI AUDIO GENERATOR (Tanpa file eksternal)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'happy') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(554.37, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'sad') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime + 0.15);
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.3);
+                
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            }
+        }
+
+        // Fungsi pendukung untuk mendeteksi tombol Enter pada setiap input
+        function setupEnterKey(inputId, actionFunction) {
+            const inputElement = document.getElementById(inputId);
+            inputElement.addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    actionFunction();
+                }
+            });
+        }
+
+        // Daftarkan event Enter untuk masing-masing tahap input
+        setupEnterKey("input-nama", mulaiPemain);
+        setupEnterKey("input-mulai-teks", konfirmasiMulai);
+        setupEnterKey("input-jawaban", cekJawaban);
+
+        function mulaiPemain() {
+            const val = document.getElementById("input-nama").value.trim();
+            if (val === "") {
+                tampilkanModal("Namanya diisi dulu ya!");
+                return;
+            }
+            nama = val;
+            document.getElementById("salam-user").innerText = `Halo ${nama}!, selamat datang di permainan PETUALANGAN ANGKA`;
+            document.getElementById("step-nama").classList.add("hidden");
+            document.getElementById("step-mulai").classList.remove("hidden");
+            document.getElementById("input-mulai-teks").value = "";
+            document.getElementById("input-mulai-teks").focus();
+        }
+
+        function konfirmasiMulai() {
+            const val = document.getElementById("input-mulai-teks").value.trim().toLowerCase();
+            if (val !== "mulai") {
+                tampilkanModal("Silakan ketik kata 'mulai' dengan benar untuk masuk ke permainan!");
+                document.getElementById("input-mulai-teks").value = "";
+                document.getElementById("input-mulai-teks").focus();
+                return;
+            }
+            document.getElementById("step-mulai").classList.add("hidden");
+            document.getElementById("step-game").classList.remove("hidden");
+            mulaiRondeBaru();
+        }
+
+        function mulaiRondeBaru() {
+            if (soalKe > 5 || nyawa <= 0) {
+                tampilkanSelesai();
+                return;
+            }
+
+            document.getElementById("label-soal").innerText = `Soal ke-${soalKe} (Percobaan ${ulang})`;
+            document.getElementById("label-nyawa").innerText = `Nyawa: ${nyawa}`;
+            document.getElementById("pesan-feedback").innerText = "";
+            
+            const inputJawab = document.getElementById("input-jawaban");
+            inputJawab.value = "";
+            inputJawab.focus();
+
+            let angka1 = Math.floor(Math.random() * 100) + 1;
+            let angka2 = Math.floor(Math.random() * 100) + 1;
+            let operasi = Math.floor(Math.random() * 2);
+
+            if (operasi === 1 && angka1 < angka2) {
+                let temp = angka1;
+                angka1 = angka2;
+                angka2 = temp;
+            }
+
+            if (operasi === 0) {
+                document.getElementById("teks-soal").innerText = `Berapa hasil dari ${angka1} + ${angka2} ?`;
+                jawabanBenar = angka1 + angka2;
+            } else {
+                document.getElementById("teks-soal").innerText = `Berapa hasil dari ${angka1} - ${angka2} ?`;
+                jawabanBenar = angka1 - angka2;
+            }
+        }
+
+        function cekJawaban() {
+            const inputVal = document.getElementById("input-jawaban").value;
+            if (inputVal === "") {
+                tampilkanModal("Masukkan jawabannya terlebih dahulu!");
+                return;
+            }
+
+            let jawabanAnak = parseInt(inputVal);
+            let feedback = document.getElementById("pesan-feedback");
+            let inputJawab = document.getElementById("input-jawaban");
+            
+            inputJawab.disabled = true;
+
+            if (jawabanAnak === jawabanBenar) {
+                feedback.className = "message correct";
+                feedback.innerText = "Benar! Hebat!";
+                skor += 20;
+                playSound('happy');
+            } else {
+                feedback.className = "message wrong";
+                feedback.innerText = `Salah! Jawaban yang benar adalah ${jawabanBenar}`;
+                nyawa--;
+                playSound('sad');
+            }
+
+            setTimeout(() => {
+                inputJawab.disabled = false;
+                soalKe++;
+                if (nyawa <= 0 || soalKe > 5) {
+                    tampilkanSelesai();
+                } else {
+                    mulaiRondeBaru();
+                }
+            }, 1600);
+        }
+
+        function tampilkanSelesai() {
+            document.getElementById("step-game").classList.add("hidden");
+            document.getElementById("step-selesai").classList.remove("hidden");
+            
+            let judul = document.getElementById("judul-selesai");
+            if (nyawa <= 0) {
+                judul.innerText = "GAME OVER! Nyawamu habis.";
+            } else {
+                judul.innerText = "Permainan Selesai";
+            }
+
+            document.getElementById("skor-akhir").innerText = `Skor akhir kamu : ${skor}/100`;
+            document.getElementById("pesan-penutup").innerText = `TERIMA KASIH TELAH BERMAIN, ${nama.toUpperCase()}!`;
+        }
+
+        function prosesMainLagi(pilihan) {
+            if (pilihan === 'iya') {
+                ulang++;
+                skor = 0;
+                nyawa = 3;
+                soalKe = 1;
+                document.getElementById("step-selesai").classList.add("hidden");
+                document.getElementById("step-game").classList.remove("hidden");
+                mulaiRondeBaru();
+            } else if (pilihan === 'tidak') {
+                document.getElementById("step-selesai").classList.add("hidden");
+                document.getElementById("step-keluar").classList.remove("hidden");
+                document.getElementById("pesan-keluar-nama").innerText = `SAMPAI JUMPA LAGI, ${nama.toUpperCase()}!`;
+            }
+        }
+    </script>
+</body>
+</html>
